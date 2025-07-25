@@ -145,3 +145,6 @@ const people = [
   { name: 'Thomas', age: 18 },
   { name: 'Nico', age: 15 }
 ];
+
+
+console.log({'asdasd'})
