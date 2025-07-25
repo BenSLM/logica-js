@@ -140,11 +140,23 @@ const clean = (arrayItems) => {
 // Crear una función que retorne un array sólo con los nombres de las personas con edad >= 18
 
 const people = [
-  { name: 'Pepe', age: 16 },
-  { name: 'Laura', age: 21 },
-  { name: 'Thomas', age: 18 },
-  { name: 'Nico', age: 15 }
+  { username: 'Pepe', age: 16 },
+  { username: 'Laura', age: 21 },
+  { username: 'Thomas', age: 18 },
+  { username: 'Nico', age: 15 }
 ];
 
+const isAdult = (arrayPeople) => {
+   const filteredArray = arrayPeople.filter((person) => person.age >= 18)
+   const mappedArray = filteredArray.map(({username}) => username)
+   return mappedArray
+ }
 
-console.log('asdasd')
+const isAdultCompact = (arrayPeople) => arrayPeople
+  .filter(person => person.age >= 18)
+  .map(({username}) => username)
+
+console.log(isAdultCompact(people))
+
+// input: array de personas
+// output: retorna array con personas >= 18
