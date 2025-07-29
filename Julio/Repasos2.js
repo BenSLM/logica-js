@@ -48,6 +48,23 @@ console.log(updatedPerson)
 //     - Entre 18 y 65: "Adulto"
 //     - Mayor a 65: "Adulto mayor"
 
+const verifyAge = (age) => {
+    
+    if (typeof age !== "number" || age <= 0) {
+        return "Edad invalida"
+    }
+    
+    if (age < 18) {
+        return "Menor de edad"
+    }
+    else if (age <= 65) {
+        return "Adulto"
+    }
+    else {
+        return "Adulto Mayor"
+    }
+}
+
 // 4. Crear una función que reciba un array de objetos y un nombre de propiedad (string) y
 //    retorne un nuevo array con sólo los objetos que tienen esa propiedad definida y no vacía.
 
