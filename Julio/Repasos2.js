@@ -165,6 +165,7 @@ const getUsers = async () => {
   }
 };
 
+//getUsers()
 
 // 9. Usar fetch para traer datos de la API pública https://jsonplaceholder.typicode.com/todos
 //    y mostrar en consola los títulos de los primeros 5 ítems.
@@ -182,36 +183,88 @@ const firstFiveTasks = async () => {
     }
 }
 
-firstFiveTasks()
-
-
 // 10. Crear una función fetchItems(limit) que reciba cuántos ítems mostrar
 //     desde la API y muestre sólo esa cantidad de títulos.
-
-// function fetchItems(limit) {
-//     // Tu código aquí
-// }
 
 // 11. Validar que el parámetro de la función anterior sea un número mayor que 0
 //     y mostrar un mensaje si es inválido.
 
-// function fetchItems(limit) {
-//     // Tu código aquí
-// }
+async function fetchItems(limit) {
+    if (typeof limit !== 'number' || limit <= 0) {
+        throw new Error("El numero ingresado debe ser mayor a 0");
+    }
+    
+    try {
+        const response = await fetch("https://jsonplaceholder.typicode.com/users");
+        if (!response.ok) {
+            throw new Error(`Error HTTP ${response.status}`);
+        }
+        
+        const data = await response.json()
+        
+        const usersToShow = data.slice(0,limit)
+
+        usersToShow.forEach((element, index) => console.log(`N° ${index + 1} User: ${element.name}`))
+
+        return usersToShow
+    } catch (error) {
+        console.log('Error', error)
+        throw new Error("Error");
+    }
+}
 
 // 12. Separar responsabilidades: una función fetchTodos() que traiga los datos,
 //     y otra showTitles(array, limit) que los muestre.
 
-// async function fetchTodos() {
-//     // Tu código aquí
-// }
-
-// function showTitles(array, limit) {
-//     // Tu código aquí
-// }
-
 // 13. Usar una variable global `cachedTodos` para guardar los datos una vez descargados,
 //     y evitar volver a hacer fetch si ya están disponibles.
+
+let cachedTodos = [];
+
+async function fetchTodos() {
+    
+    if (cachedTodos.length > 0) {
+        console.log("Usando datos en caché");
+        return cachedTodos;
+    }
+
+    try {
+        const response = await fetch('https://jsonplaceholder.typicode.com/todos')
+        if (!response.ok) {
+            throw new Error(`Error HTTP ${response.status}`);
+        }
+
+        const data = await response.json()
+        cachedTodos = data
+        return cachedTodos
+
+    } catch (error) {
+        console.log('Error', error)
+        throw new Error("Error");
+    }      
+}
+
+async function showTitles(arrayPromise, limit) {
+    try {
+        const arrayPromiseResolved = await arrayPromise;
+        const tasks = arrayPromiseResolved.splice(0,limit)
+        
+        tasks.forEach(task => console.log(task.title))
+
+    } catch (error) {
+        console.log("Fallo al obtener y mostrar los titulos.");
+    }
+}
+
+//Otra solucion valida es asi con .then() cuando pero deberiamos hacer un cambio en la funcion showTitles
+//Debido a que la hicimos sincronica, en la solucion de abajo la funcion showTitles debe ser asincronica
+//Pues esta mostrando datos en consola solamente.
+
+// fetchTodos()
+//   .then(data => showTitles(data, 5))
+//   .catch(err => console.log("Error general:", err));
+
+
 
 // let cachedTodos = [];
 
@@ -219,23 +272,42 @@ firstFiveTasks()
 //     // Tu código aquí
 // }
 
-// 14. Agregar un parámetro `force` a fetchTodos() para forzar recarga de datos
-//     incluso si ya hay datos en caché.
 
-// async function fetchTodos(force = false) {
-//     // Tu código aquí
-// }
-
-// 15. Crear una función showCompletedTitles() que filtre y muestre
+// 14. Crear una función showCompletedTitles() que filtre y muestre
 //     sólo los títulos de tareas completadas (completed: true)
 
-// async function showCompletedTitles() {
-//     // Tu código aquí
-// }
+async function showCompletedTitles() {
+    try {
+        const todos = await fetchTodos()
+        const completedTasks = todos.filter(task => task.completed === true)
+        completedTasks.forEach(completedTask => console.log(`Tarea completada: ${completedTask.title}`))
 
-// 16. Crear una función getTitles({ limit, completedOnly, force })
+    } catch (error) {
+        console.log('Error', error)
+    } 
+}
+
+// 15. Crear una función getTitles({ limit, completedOnly })
 //     que combine todo lo anterior en una sola función con opciones personalizadas.
 
-// async function getTitles({ limit = 5, completedOnly = false, force = false }) {
-//     // Tu código aquí
-// }
+async function getTitles({ limit = 5, completedOnly = false }) {
+    try {
+        const todos = await fetchTodos()
+
+        let filteredTodos;
+
+        if (completedOnly === true) {
+            filteredTodos = todos.filter(todo => todo.completed)
+        } else {
+            filteredTodos = todos;
+        }
+
+        const limitedTodos = filteredTodos.slice(0, limit);
+
+        limitedTodos.forEach(todo => console.log(todo.title));
+    } catch (error) {
+        console.log('Error', error);
+    }    
+}
+
+getTitles({limit: 5, completedOnly: false})
